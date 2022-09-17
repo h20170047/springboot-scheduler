@@ -8,9 +8,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -18,15 +17,15 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class ReportService {
+public class ExcelReportService implements  reportService{
     private OrderRepository repository;
 
     @Autowired
-    public ReportService(OrderRepository orderRepository){
+    public ExcelReportService(OrderRepository orderRepository){
         repository= orderRepository;
     }
 
-    public byte[] generateReport() throws IOException {
+    public byte[] generateReport() {
         List<Order> orders = repository.findAll();
         SXSSFWorkbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet();
@@ -51,8 +50,14 @@ public class ReportService {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             workbook.write(bos);
-        } finally {
-            bos.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        } finally{
+            try {
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return bos.toByteArray();
 
