@@ -1,14 +1,11 @@
-package com.svj.service;
+package com.svj.service.report;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.svj.model.Order;
-import com.svj.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -25,14 +22,8 @@ import java.util.stream.Stream;
         value="report_format",
         havingValue = "pdf")
 public class PDFReportService implements reportService{
-    private OrderRepository repository;
 
-    @Autowired
-    public PDFReportService(OrderRepository repository){
-        this.repository= repository;
-    }
-
-    public byte[] generateReport() {
+    public byte[] generateReport(List<Order> orders) {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream("iTextHelloWorld.pdf"));
@@ -45,7 +36,6 @@ public class PDFReportService implements reportService{
 
             PdfPTable table = new PdfPTable(4);
             addTableHeader(table);
-            List<Order> orders = repository.findAll();
             orders.stream().forEach(order -> addRows(table, order));
             document.add(table);
 

@@ -1,7 +1,10 @@
 package com.svj.service;
 
+import com.svj.model.Order;
+import com.svj.repository.OrderRepository;
+import com.svj.service.report.PDFReportService;
+import com.svj.service.report.reportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,12 +15,14 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class NotificationService {
 
     private reportService reportServiceInstance;
     private JavaMailSender javaMailSender;
+    private OrderRepository repository;
 
     @Value("${spring.mail.username}")
     private String sender;
@@ -26,9 +31,10 @@ public class NotificationService {
     private String toEmails;
 
     @Autowired
-    public NotificationService( reportService reportServiceObj, JavaMailSender javaMailSender){
+    public NotificationService( reportService reportServiceObj, JavaMailSender javaMailSender, OrderRepository orderRepository){
         this.reportServiceInstance= reportServiceObj;
         this.javaMailSender= javaMailSender;
+        repository= orderRepository;
     }
 
     public String sendDailyReports() throws MessagingException, IOException {
@@ -40,10 +46,6 @@ public class NotificationService {
         helper.setSubject("List of orders_"+new Date());
         helper.setText("Hello,\nPlease find the attachment for today's order received!");
 
-//        byte[] report= reportService.generateReport();
-//        ByteArrayResource content= new ByteArrayResource(report);
-//        helper.addAttachment(new Date()+"_orders.xlsx", content);
-
         buildReport(helper);
 
         javaMailSender.send(mimeMessage);
@@ -51,9 +53,10 @@ public class NotificationService {
     }
 
     private void buildReport(MimeMessageHelper helper) throws MessagingException {
-        byte[] report= reportServiceInstance.generateReport();
+        List<Order> orders = repository.findAll();
+        byte[] report= reportServiceInstance.generateReport(orders);
         ByteArrayResource content= new ByteArrayResource(report);
-        String fileName= reportServiceInstance instanceof PDFReportService? new Date()+"_orders.pdf": new Date()+"_orders.xlsx";
+        String fileName= reportServiceInstance instanceof PDFReportService ? new Date()+"_orders.pdf": new Date()+"_orders.xlsx";
         helper.addAttachment(fileName, content);
     }
 }

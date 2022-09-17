@@ -1,16 +1,13 @@
-package com.svj.service;
+package com.svj.service.report;
 
 import com.svj.model.Order;
-import com.svj.repository.OrderRepository;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -22,15 +19,8 @@ import java.util.List;
         value="report_format",
         havingValue = "excel")
 public class ExcelReportService implements  reportService{
-    private OrderRepository repository;
 
-    @Autowired
-    public ExcelReportService(OrderRepository orderRepository){
-        repository= orderRepository;
-    }
-
-    public byte[] generateReport() {
-        List<Order> orders = repository.findAll();
+    public byte[] generateReport(List<Order> orders) {
         SXSSFWorkbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         writeHeaderLine(sheet);
