@@ -26,7 +26,7 @@ public class NotificationService {
     private String toEmails;
 
     @Autowired
-    public NotificationService(@Qualifier("excelReportService") reportService reportServiceObj, JavaMailSender javaMailSender){
+    public NotificationService( reportService reportServiceObj, JavaMailSender javaMailSender){
         this.reportServiceInstance= reportServiceObj;
         this.javaMailSender= javaMailSender;
     }

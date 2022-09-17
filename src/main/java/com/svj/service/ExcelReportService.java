@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@ConditionalOnProperty(
+        value="report_format",
+        havingValue = "excel")
 public class ExcelReportService implements  reportService{
     private OrderRepository repository;
 

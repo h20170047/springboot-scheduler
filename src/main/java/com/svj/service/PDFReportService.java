@@ -7,6 +7,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.svj.model.Order;
 import com.svj.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-@Primary
+@ConditionalOnProperty(
+        value="report_format",
+        havingValue = "pdf")
 public class PDFReportService implements reportService{
     private OrderRepository repository;
 
